@@ -381,7 +381,7 @@ void sort(std::vector<Room>& brigade)
       //print_brigade(brigade);
       //exit(1);
       // try choosing the worse option?
-      swap(brigade, a, c); // I don't know just do something
+      swap(brigade, (a + b) / 2, (c + d) / 2); // I don't know just do something
                            //swap(brigade, b, d);
       //if(aANDd >= bANDc) swap(brigade, a, d);
       //else swap(brigade, b, c);

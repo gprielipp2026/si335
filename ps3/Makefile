@@ -14,8 +14,6 @@ all: $(TARGETS)
 	$(CXX) $(CXXFLAGS) $< -o $@
 
 
-
-
 test: rooms checker
 	./rooms <$(FILE) | ./checker $(FILE)
 

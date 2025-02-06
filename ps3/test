@@ -1,0 +1,8 @@
+#!/usr/bin/bash
+
+make
+
+for file in "tests"/*;
+do
+  ./rooms <$file | ./checker $file 
+done
