@@ -1,14 +1,16 @@
 CXX=g++
-CXXFLAGS=-Wall -g
+CXXFLAGS=-Wall -g -std=c++20
 
 SRCS=$(wildcard src/*.cpp)
 OBJS=$(SRCS:src/%.cpp=objs/%.o)
 
-run: all
+run: exe 
 	@echo
 	./exe
 
-all: $(OBJS) 
+all: run 
+	
+exe: $(OBJS)
 	@echo "Compiling executable"
 	$(CXX) $(CXXFLAGS) -o exe $^
 

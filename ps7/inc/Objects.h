@@ -3,38 +3,42 @@
 
 #include <vector>
 #include <iostream>
-
-/**
- * NOTE:
- * create constructor functions - private
- * add private fields
- */
+#include <memory>
 
 // Obstacles
 class Obstacle
 {
 private:
+  int row, col; // the position
   
 public:
-  static std::vector<Obstacle*> read(std::istream& is); 
+  Obstacle(int row, int col);
+  static std::vector<std::shared_ptr<Obstacle>> read(std::istream& is); 
 };
 
 // Assets
 class Asset
 {
 private:
-
+  int row, col; // the position
+  int id;       // unique numerical identifier
+  
 public:
-  static std::vector<Asset*> read(std::istream& is); 
+  Asset(int row, int col, int id);
+  static std::vector<std::shared_ptr<Asset>> read(std::istream& is); 
 };
 
 // Targets
 class Target
 {
 private:
-
+  int row, col; // the position
+  char label;   // unique alphabetical identifier
+  int points;   // value earned for reaching this target 
+  
 public:
-  static std::vector<Target*> read(std::istream& is); 
+  Target(int row, int col, int points, char label); 
+  static std::vector<std::shared_ptr<Target>> read(std::istream& is); 
 };
 
 #endif//OBJECTS_H

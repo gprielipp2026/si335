@@ -7,18 +7,18 @@
 #include <cstdlib>
 #include <string>
 #include <exception>
+#include <memory>
 
 #include "Objects.h"
 
 typedef struct
 {
   unsigned int rows, cols;
-  std::vector<Obstacle*> obstacles;
-  std::vector<Asset*>    assets;
-  std::vector<Target*>   targets;
+  std::vector<std::shared_ptr<Obstacle>> obstacles;
+  std::vector<std::shared_ptr<Asset>>    assets;
+  std::vector<std::shared_ptr<Target>>   targets;
 } Data;
 
-
-Data* read(std::string filename); // read necessary data from a file
+std::shared_ptr<Data> read(std::string filename); // read necessary data from a file
 
 #endif//READER_H

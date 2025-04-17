@@ -4,7 +4,7 @@
  * Pull out the constituent parts for the problem
  * Store the data for the user in a convenient pointer
  */
-Data* read(std::string filename)
+std::shared_ptr<Data> read(std::string filename)
 {
   // construct the input stream
   std::ifstream file(filename); 
@@ -24,12 +24,12 @@ Data* read(std::string filename)
   // read in the obstacles
   try
   {
-    std::vector<Obstacle*> obstacles = Obstacle::read(file);
-    std::vector<Asset*>    assets    = Asset::read(file);
-    std::vector<Target*>   targets   = Target::read(file);
+    std::vector<std::shared_ptr<Obstacle>> obstacles = Obstacle::read(file);
+    std::vector<std::shared_ptr<Asset>>    assets    = Asset::read(file);
+    std::vector<std::shared_ptr<Target>>   targets   = Target::read(file);
   
     // allocate the pointer - user will have to free it
-    Data* data = (Data*)malloc(sizeof(*data));
+    std::shared_ptr<Data> data = std::make_shared<Data>();
 
     // assign the data and return it
     data->rows      = rows;
@@ -50,3 +50,4 @@ Data* read(std::string filename)
   // in case it gets here somehow
   return NULL; 
 }
+
