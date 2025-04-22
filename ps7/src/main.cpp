@@ -3,18 +3,32 @@
 #include <vector>
 #include <cstdlib>
 #include "../inc/Reader.h"
+
+#define MAX_ASSETS 3
+
 using namespace std;
 
 typedef union
 {
-  char dir[3]; // can have up to 3 assets
+  char dir[MAX_ASSETS] = {0}; 
   struct {
+    // would need to change this to remap the variables based on MAX_ASSETS
     char a, b, c;
   };
+
+  
 } Move;
+ostream& operator<<(ostream& os, Move& m)
+{
+  for(int i = 0; i < MAX_ASSETS; i++)
+  {
+    os << m.dir[i];
+  } 
+  return os;
+}
+
 
 vector<Move> find_moves(shared_ptr<Data> data);
-
 
 int main(int argc, char* argv[])
 {
@@ -24,28 +38,59 @@ int main(int argc, char* argv[])
     cerr << "usage: " << argv[0] << " <input map>" << std::endl;
     return EXIT_SUCCESS;
   }
-
-  shared_ptr<Data> data = read(argv[1]);
-
-  Move move;
-
-  move.a = 'L';
-  move.b = 'U';
-  move.c = 'R';
-
-  cerr << "Movement directions: ";
-  for(int i = 0; i < 3; i++)
-  {
-    cerr << move.dir[i];
-  }
-  cerr << endl;
   
+  // parse the file
+  shared_ptr<Data> data = read(argv[1]);
+  
+  // run the algorithm
+  vector<Move> moves = find_moves(data);
+ 
+  // testing purposes: TODO REMOVE
+  cerr << "Obstacles:" << endl;
+  for(shared_ptr<Obstacle> obstacle : data->obstacles)
+  {
+    cerr << (*obstacle) << endl;
+  }
+  cerr << endl << "Assets:" << endl;
+  for(shared_ptr<Asset> asset : data->assets)
+  {
+    cerr << (*asset) << endl;
+  }
+  cerr << endl << "Targets:" << endl;
+  for(shared_ptr<Target> target : data->targets)
+  {
+    cerr << (*target) << endl;
+  }
+  // end TODO
+
+  // output the moves  
+  for(Move m : moves)
+  {
+    cerr << m << endl;
+  } 
 
   return EXIT_SUCCESS;
 }
 
+
+// heuristic for determining who is closer
+int heuristic(Pos a, Pos b)
+{
+  return 0;
+}
+
+
+// main algorithm
 vector<Move> find_moves(shared_ptr<Data> data)
 {
+  vector<Move> moves; 
+    
+  /**
+   * For each asset:
+   *   Choose the closest target until all targets are exhausted 
+   */ 
 
-  return vector<Move>();
+
+
+  return moves;
 }

@@ -4,9 +4,9 @@ CXXFLAGS=-Wall -g -std=c++20
 SRCS=$(wildcard src/*.cpp)
 OBJS=$(SRCS:src/%.cpp=objs/%.o)
 
-run: exe 
+run: exe
 	@echo
-	./exe
+	./exe junk.txt
 
 all: run 
 	
