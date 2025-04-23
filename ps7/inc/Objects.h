@@ -6,41 +6,39 @@
 #include <memory>
 
 // Object that stores a Position
-class Pos
+typedef struct
 {
-private:
-  int row, col; 
-public:
-  Pos(int row, int col);
- 
-  int getRow(); // return the row
-  int getCol(); // return the col
-
-  //friend std::ostream& operator<< (std::ostream& os, Pos& pos);
-  //friend std::istream& operator>> (std::istream& is, Pos& pos); // may not use
-};
+  int row, col;
+} Pos;
 
 // Obstacles
-class Obstacle : public Pos
+class Obstacle 
 {
 private:
-  
+  Pos pos; 
 public:
   Obstacle(int row, int col);
+
+  int getRow();
+  int getCol();
 
   static std::vector<std::shared_ptr<Obstacle>> read(std::istream& is); 
   friend std::ostream& operator<< (std::ostream& os, Obstacle& obstacle);
 };
 
 // Assets
-class Asset : Pos
+class Asset
 {
 private:
+  Pos pos; 
   int id;  // unique numerical identifier
-  
+   
 public:
   Asset(int row, int col, int id);
   
+  int getRow();
+  int getCol();
+
   int getId();
 
   static std::vector<std::shared_ptr<Asset>> read(std::istream& is); 
@@ -48,14 +46,18 @@ public:
 };
 
 // Targets
-class Target : Pos
+class Target
 {
 private:
+  Pos pos;
   char label; // unique alphabetical identifier
   int points; // value earned for reaching this target 
   
 public:
   Target(int row, int col, int points, char label); 
+
+  int getRow();
+  int getCol();
 
   char getLabel();
   int  getPoints();

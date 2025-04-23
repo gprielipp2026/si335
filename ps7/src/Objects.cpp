@@ -1,52 +1,20 @@
 #include "../inc/Objects.h"
-
 /**
  * switch over to the Pos class 
  */
-
-
-// Position
-// private
-
-// public
-Pos::Pos(int row, int col) 
-{
-  std::cerr << "[Pos] initialized with values: (" << row << ", " << col << ")" << std::endl;
-  this->row = row;
-  this->col = col;
-}
-
-// get attributes
-int Pos::getRow() 
-{ 
-  std::cerr << "[Pos::getRow] row = " << this->row << std::endl;
-  return this->row; 
-}
-int Pos::getCol() 
-{ 
-  std::cerr << "[Pos::getCol] col = " << this->col << std::endl;
-  return this->col; 
-}
-
-// output
-//std::ostream& operator<< (std::ostream& os, Pos& pos)
-//{
-  //os << "[Pos] " << pos.row << " " << pos.col;
-  //return os;
-//}
-//// input
-//std::istream& operator>> (std::istream& is, Pos& pos)
-//{
-  //is >> pos.row >> pos.col;
-  //return is;
-//}
 
 // Obstacle
 // private
 
 // public
 Obstacle::Obstacle(int row, int col)
-  : Pos{row, col} {  }
+{
+  pos = Pos{row, col};
+}
+
+// access member fields safely
+int Obstacle::getRow() { return pos.row; }
+int Obstacle::getCol() { return pos.col; }
 
 // reads in from the file
 std::vector<std::shared_ptr<Obstacle>> Obstacle::read(std::istream& is)
@@ -79,10 +47,15 @@ std::ostream& operator<< (std::ostream& os, Obstacle& obstacle)
 
 // public 
 Asset::Asset(int row, int col, int id)
-  : Pos{row, col}
 {
+  pos = Pos{row, col};
   this->id  = id;
 }
+
+// access member fields safely
+int Asset::getRow() { return pos.row; }
+int Asset::getCol() { return pos.col; }
+
 
 std::vector<std::shared_ptr<Asset>> Asset::read(std::istream& is)
 {
@@ -116,11 +89,15 @@ std::ostream& operator<< (std::ostream& os, Asset& asset)
 
 // public
 Target::Target(int row, int col, int points, char label)
-  : Pos{row, col}
 {
+  pos = Pos{row, col};
   this->points = points;
   this->label  = label;
 }
+
+// access member fields safely
+int Target::getRow() { return pos.row; }
+int Target::getCol() { return pos.col; }
 
 std::vector<std::shared_ptr<Target>> Target::read(std::istream& is)
 {
