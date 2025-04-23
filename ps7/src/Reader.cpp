@@ -4,7 +4,7 @@
  * Pull out the constituent parts for the problem
  * Store the data for the user in a convenient pointer
  */
-std::shared_ptr<Data> read(std::string filename)
+Data* read(std::string filename)
 {
   // construct the input stream
   std::ifstream file(filename); 
@@ -25,15 +25,15 @@ std::shared_ptr<Data> read(std::string filename)
   // read in the obstacles
   try
   {
-    std::vector<std::shared_ptr<Obstacle>> obstacles = Obstacle::read(file);
+    std::vector<Obstacle*>* obstacles = Obstacle::read(file);
     std::cerr << "[read] obstacles assigned" << std::endl; 
-    std::vector<std::shared_ptr<Asset>>    assets    = Asset::read(file);
+    std::vector<Asset*>*    assets    = Asset::read(file);
     std::cerr << "[read] assets assigned" << std::endl; 
-    std::vector<std::shared_ptr<Target>>   targets   = Target::read(file);
+    std::vector<Target*>*   targets   = Target::read(file);
     std::cerr << "[read] targets assigned" << std::endl; 
   
     // allocate the pointer - user will have to free it
-    std::shared_ptr<Data> data = std::make_shared<Data>();
+    Data* data = (Data*)malloc(sizeof(*data));
 
     // assign the data and return it
     data->rows      = rows;
@@ -55,3 +55,30 @@ std::shared_ptr<Data> read(std::string filename)
   return NULL; 
 }
 
+/**
+ * Free all of the fields in data, then free data
+ */
+void cleanup(Data* data)
+{
+  // clear the obstacles
+  for(Obstacle* i : *data->obstacles)
+  {
+    delete i;
+  }
+  delete data->obstacles;
+  // clear the assets 
+  for(Asset* i : *data->assets)
+  {
+    delete i;
+  }
+  delete data->assets;
+  // clear the targets 
+  for(Target* i : *data->targets)
+  {
+    delete i;
+  }
+  delete data->targets;
+
+  // free the Data struct
+  free(data);
+}

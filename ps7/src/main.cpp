@@ -28,7 +28,7 @@ ostream& operator<<(ostream& os, Move& m)
 }
 
 
-vector<Move> find_moves(shared_ptr<Data> data);
+vector<Move> find_moves(Data* data);
 
 int main(int argc, char* argv[])
 {
@@ -40,24 +40,24 @@ int main(int argc, char* argv[])
   }
   
   // parse the file
-  shared_ptr<Data> data = read(argv[1]);
+  Data* data = read(argv[1]);
   
   // run the algorithm
   vector<Move> moves = find_moves(data);
  
   // testing purposes: TODO REMOVE
   cerr << "Obstacles:" << endl;
-  for(shared_ptr<Obstacle> obstacle : data->obstacles)
+  for(Obstacle* obstacle : data->obstacles)
   {
     cerr << (*obstacle) << endl;
   }
   cerr << endl << "Assets:" << endl;
-  for(shared_ptr<Asset> asset : data->assets)
+  for(Asset* asset : data->assets)
   {
     cerr << (*asset) << endl;
   }
   cerr << endl << "Targets:" << endl;
-  for(shared_ptr<Target> target : data->targets)
+  for(Target* target : data->targets)
   {
     cerr << (*target) << endl;
   }
@@ -68,6 +68,8 @@ int main(int argc, char* argv[])
   {
     cerr << m << endl;
   } 
+
+  cleanup(data);
 
   return EXIT_SUCCESS;
 }
@@ -81,7 +83,7 @@ int heuristic(Pos a, Pos b)
 
 
 // main algorithm
-vector<Move> find_moves(shared_ptr<Data> data)
+vector<Move> find_moves(Data* data)
 {
   vector<Move> moves; 
     

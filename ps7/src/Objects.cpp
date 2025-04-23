@@ -11,25 +11,31 @@ Obstacle::Obstacle(int row, int col)
 {
   pos = Pos{row, col};
 }
+// copy constructor
+Obstacle::Obstacle(const Obstacle& other)
+{
+  std::cerr << "[Obstacle] copy constructor" << std::endl;
+  pos = other.pos;
+}
 
 // access member fields safely
 int Obstacle::getRow() { return pos.row; }
 int Obstacle::getCol() { return pos.col; }
 
 // reads in from the file
-std::vector<std::shared_ptr<Obstacle>> Obstacle::read(std::istream& is)
+std::vector<Obstacle*>* Obstacle::read(std::istream& is)
 {
   // read in the number of items
   unsigned int num;
   is >> num;
 
-  std::vector<std::shared_ptr<Obstacle>> data(num);
+  std::vector<Obstacle*>* data = new std::vector<Obstacle*>(num);
 
   while (num-- > 0)
   {
     int row, col;
     is >> row >> col;
-    data.emplace_back( std::make_unique<Obstacle>(row, col) );
+    data->push_back( new Obstacle(row, col) );
   }
 
   return data;
@@ -51,26 +57,33 @@ Asset::Asset(int row, int col, int id)
   pos = Pos{row, col};
   this->id  = id;
 }
+// copy constructor
+Asset::Asset(const Asset& other)
+{
+  std::cerr << "[Asset] copy constructor" << std::endl;
+  pos = other.pos;
+  id = other.id;
+}
 
 // access member fields safely
 int Asset::getRow() { return pos.row; }
 int Asset::getCol() { return pos.col; }
 
 
-std::vector<std::shared_ptr<Asset>> Asset::read(std::istream& is)
+std::vector<Asset*>* Asset::read(std::istream& is)
 {
   // read in the number of items
   unsigned int num;
   is >> num;
 
-  std::vector<std::shared_ptr<Asset>> data(num);
+  std::vector<Asset*>* data = new std::vector<Asset*>(num);
 
   int id = 1;
   while (num-- > 0)
   {
     int row, col;
     is >> row >> col;
-    data.emplace_back( std::make_unique<Asset>(row, col, id) );
+    data->push_back( new Asset(row, col, id) );
     id ++;
   }
 
@@ -95,24 +108,33 @@ Target::Target(int row, int col, int points, char label)
   this->label  = label;
 }
 
+// Copy constructor
+Target::Target(const Target& other)
+{
+  std::cerr << "[Target] copy constructor" << std::endl;
+  pos = other.pos;
+  label = other.label;
+  points = other.points;
+}
+
 // access member fields safely
 int Target::getRow() { return pos.row; }
 int Target::getCol() { return pos.col; }
 
-std::vector<std::shared_ptr<Target>> Target::read(std::istream& is)
+std::vector<Target*>* Target::read(std::istream& is)
 {
   // read in the number of items
   unsigned int num;
   is >> num; 
 
-  std::vector<std::shared_ptr<Target>> data(num);
+  std::vector<Target*>* data = new std::vector<Target*>(num);
 
   char stop = 'A' + num;
   for(char id = 'A'; id < stop; id++) 
   {
     int row, col, points;
     is >> row >> col >> points;
-    data.emplace_back( std::make_unique<Target>(row, col, points, id) );
+    data->push_back( new Target(row, col, points, id) );
   }
 
   return data;

@@ -18,11 +18,13 @@ private:
   Pos pos; 
 public:
   Obstacle(int row, int col);
+  Obstacle(const Obstacle& other); // copy constructor
+  /*Obstacle(Obstacle&&      other); // move constructor*/
 
   int getRow();
   int getCol();
 
-  static std::vector<std::shared_ptr<Obstacle>> read(std::istream& is); 
+  static std::vector<Obstacle*>* read(std::istream& is); 
   friend std::ostream& operator<< (std::ostream& os, Obstacle& obstacle);
 };
 
@@ -35,13 +37,15 @@ private:
    
 public:
   Asset(int row, int col, int id);
+  Asset(const Asset& other); // copy constructor
+  /*Asset(Asset&&      other); // move constructor*/
   
   int getRow();
   int getCol();
 
   int getId();
 
-  static std::vector<std::shared_ptr<Asset>> read(std::istream& is); 
+  static std::vector<Asset*>* read(std::istream& is); 
   friend std::ostream& operator<< (std::ostream& os, Asset& asset);
 };
 
@@ -55,7 +59,9 @@ private:
   
 public:
   Target(int row, int col, int points, char label); 
-
+  Target(const Target& other); // copy constructor
+  /*Target(Target&&      other); // move constructor*/
+  
   int getRow();
   int getCol();
 
@@ -63,7 +69,7 @@ public:
   int  getPoints();
   void updatePoints(int value);
 
-  static std::vector<std::shared_ptr<Target>> read(std::istream& is); 
+  static std::vector<Target*>* read(std::istream& is); 
   friend std::ostream& operator<< (std::ostream& os, Target& target);
 };
 
