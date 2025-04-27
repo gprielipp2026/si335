@@ -1,12 +1,12 @@
 CXX=g++
-CXXFLAGS=-Wall -g -std=c++14 -O1
+CXXFLAGS=-Wall -g -std=c++14 
 
 SRCS=$(wildcard src/*.cpp)
 OBJS=$(SRCS:src/%.cpp=objs/%.o)
 
 run: exe
 	@echo
-	./exe junk.txt
+	./exe small.txt
 
 all: run 
 	
