@@ -2,10 +2,14 @@
  * everything will have to go in this file unfortunately
  */
 
+#include <algorithm>
 #include <iostream>
 #include <fstream>
 #include <cstdlib>
 #include <vector>
+#include <unordered_map>
+#include <utility>
+#include <set>
 
 using namespace std;
 
@@ -87,7 +91,7 @@ int main(int argc, char* argv[])
   cerr << endl;
   
   vector<Move*> moves = ALGORITHM_NAME(board);
-  output();
+  output(moves);
   cleanup(board, moves);
 
   return EXIT_SUCCESS;
@@ -188,7 +192,149 @@ vector<Move*> ALGORITHM_NAME(Board* board)
    *
    * return computed paths
    */ 
-  
+
+
+  // a copy of the assets (since I'm going to change their positions for the algorithm)
+  vector<Asset*> assetCopies;
+  for(Asset* asset : board->assets)
+  {
+    Asset* copy = (Asset*)malloc(sizeof(*copy));
+    copy->pos = (Pos*)malloc(sizeof(*copy->pos));
+    copy->pos->row = asset->pos->row;
+    copy->pos->col = asset->pos->col;
+    copy->id = asset->id;
+    assetCopies.push_back(copy);
+  } // TODO - clean up at end (or don't, I don't care)
+
+
+  int numtgts = board->targets.size();
+  int numassets = board->assets.size();
+  unordered_map<int, vector<Target*>> paths;
+  for(int id = 0; id < numassets; id++)
+  {
+    paths.insert(make_pair<int, vector<Target*>>(static_cast<int>(id), vector<Target*>()));
+  } 
+
+  set<char> remainingTargets;
+  for(char l = 'A'; l < 'A' + numtgts; l++)
+  {
+    remainingTargets.insert(l);
+  }
+
+  // Main loop to find the targets
+  while(!remainingTargets.empty())
+  {
+    cerr << "[ALGORITHM] targets remaining assignment = " << remainingTargets.size() << endl;
+
+    // get the closest based on the heuristic
+    pair<int, Target*> closest[numassets];
+    for(Asset* asset : board->assets)
+    {
+      // sort the targets based on the heuristic for a given asset
+      //bool (* compare)(Target*, Target*) = [&asset] (Target* a, Target* b) -> bool { 
+      auto compare = [&asset] (Target* a, Target* b) -> bool { 
+        return heuristic(asset, a) > heuristic(asset, b);
+      };
+      std::sort(board->targets.begin(), board->targets.end(), compare);
+      int score = heuristic(asset, board->targets[0]);
+      closest[asset->id] = make_pair<int, Target*>(static_cast<int>(score), static_cast<Target*>(board->targets[0]));
+    }
+
+    // deconflict the closest
+    int countSame = 0;
+    bool cases[numassets] = {false}; 
+    for(Asset* asset : board->assets)
+    {
+      for(int i = 0; i < numassets; i++)
+      {
+        if(closest[asset->id].second == closest[i].second && asset->id != i && !cases[asset->id])
+        {
+          countSame++;
+          cases[asset->id] = true;
+          cases[i] = true;
+        }
+      }
+    }
+    
+    // assign the target to an asset
+    // update the asset->pos = target->pos // "moves the asset to the target"
+    // remove the target from the list 
+    if(countSame == numassets)
+    {
+      // all the same
+      // have to find the best one
+      
+      pair<int, Target*> min = closest[0];
+      int asset = 0;
+      for(int i = 0; i < numassets; i++)
+      {
+        if (closest[i].first < min.first) 
+        {
+          asset = i;
+          min = closest[i];
+        }
+      }
+
+      board->assets[asset]->pos = min.second->pos;
+      remainingTargets.erase(min.second->label);
+
+      // remove-erase idiom
+      // remove moves the item (min.second) to the end, 
+      // removes the element at the iterator (the end) 
+      board->targets.erase(remove(board->targets.begin(), board->targets.end(), min.second), board->targets.end());
+    }
+    else if (countSame == numassets - 1)
+    {
+      // 1 different
+      // have to find the two that are the same and choose the best one
+      // this can only happen when numassets == 3
+      int posTrue1, posTrue2, posFalse; 
+      for(int i = 0; i < numassets; i++)
+      {
+        if(!cases[i]) posFalse = i;
+      } 
+      posTrue1 = (posFalse + 1) % numassets;
+      posTrue2 = (posFalse + 2) % numassets;
+
+      // add the "outsider" - the different one
+      pair<int, Target*> other = closest[posFalse];
+      board->assets[posFalse]->pos = other.second->pos;
+      remainingTargets.erase(other.second->label);
+      board->targets.erase(remove(board->targets.begin(), board->targets.end(), other.second), board->targets.end());
+
+      // find the smallest same value to add
+      pair<int, Target*> same;
+      int idUsed;
+      if(closest[posTrue1].first > closest[posTrue2].first)
+      {
+        same = closest[posTrue2];
+        idUsed = posTrue2;
+      } 
+      else
+      {
+        same = closest[posTrue1];
+        idUsed = posTrue1;
+      } 
+      board->assets[idUsed]->pos = same.second->pos;
+      remainingTargets.erase(same.second->label);
+      board->targets.erase(remove(board->targets.begin(), board->targets.end(), same.second), board->targets.end());
+    
+    }
+    else
+    {
+      // all different
+      // can add them all
+      for(int i = 0; i < numassets; i++)
+      {
+        pair<int, Target*> cur = closest[i];
+        board->assets[i]->pos = cur.second->pos;
+        remainingTargets.erase(cur.second->label);
+        board->targets.erase(remove(board->targets.begin(), board->targets.end(), cur.second), board->targets.end());
+      }
+    }
+  }
+
+  // return computed paths
   return moves;
 }
 
